@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react'; // Import useEffect
 import { UploadSection } from '../components/UploadSection';
 import { ArtAnalyzer } from '../components/analysis/ArtAnalyzer';
-import { AnalysisResults } from '../components/analysis/AnalysisResults';
-import { DetailedArtwork } from '../types/artwork';
 import { AnalyzedArtworkDisplay } from '../components/analysis/AnalyzedArtworkDisplay';
+import { DetailedArtwork } from '../types/artwork';
 
 export function Analyzer() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -55,12 +54,12 @@ export function Analyzer() {
         ) : (
           <div className="space-y-8">
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              {/* Use previewUrl here */}
+              {/* Use previewUrl here, and set height to 100% */}
               {previewUrl && (
                 <img
                   src={previewUrl}
                   alt={`Preview of ${selectedFile.name}`}
-                  className="w-full h-96 object-cover"
+                  className="w-full h-full object-cover"
                 />
               )}
             </div>

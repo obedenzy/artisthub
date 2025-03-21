@@ -3,7 +3,7 @@ import { GeminiAPIError } from './errors';
 import { fileToGenerativePart } from './utils';
 import { DetailedArtwork } from '../../types/artwork'; // Import DetailedArtwork
 
-const INSTRUCTIONS = `Analyze the artwork and provide information on: title, artist, date, medium, dimensions, style, movement, influences, techniques, composition, color palette, perspective, texture, lighting, historical period, cultural background, political context, philosophical context, theme, narrative, symbols, subject type, origin, ownership history, current location, estimated value, exhibitions, market trends, popularity, critical reception, cultural impact, significance, digital reconstruction, AI analysis, scholarly analysis, related works, purpose, inspiration, message, fun facts, and artist signature.`;
+const INSTRUCTIONS = `Analyze the artwork and provide information on: title, artist, date, medium, dimensions, style, movement, influences, techniques, composition, perspective, texture, lighting, historical period, cultural background, political context, philosophical context, theme, narrative, symbols, subject type, origin, ownership history, current location, estimated value, exhibitions, market trends, popularity, critical reception, cultural impact, significance, digital reconstruction, AI analysis, scholarly analysis, related works, purpose, inspiration, message, fun facts, and artist signature.`; //Corrected line
 
 const ARTWORK_ANALYSIS_PROMPT = `
 ${INSTRUCTIONS}
@@ -28,7 +28,7 @@ Return the analysis in JSON format, following this EXACT structure:
   "influences": "string[]",
   "techniques": "string[]",
   "composition": "string",
-  "colorPalette": "string[]",
+  "colorPalette": "string[]",  // This will be an array of hex codes
   "perspective": "string",
   "texture": "string",
   "lighting": "string",
@@ -104,7 +104,10 @@ Return the analysis in JSON format, following this EXACT structure:
   "uploadedBy": "string"
 }
 
-The response MUST be a single, valid JSON object. No other text is allowed.  If specific information is unavailable, use "null" or an empty array as appropriate. Do NOT include any introductory or concluding sentences.
+IMPORTANT:
+*   The response MUST be a single, valid JSON object. No other text is allowed.
+*   Do not leave ANY fields as "null" or empty arrays [] EXCEPT where explicitly allowed (marked with "| null").  You MUST provide a value for EVERY field, even if it's an educated guess.
+*   **colorPalette**: This MUST be an array of 4-6 HEX color codes (e.g., ["#FF0000", "#00FF00", "#0000FF"]) representing the DOMINANT and VISUALLY REPRESENTATIVE colors in the artwork. Do NOT include color names.
 
 "output":
 `;
@@ -126,11 +129,11 @@ export async function analyzeArtwork(file: File): Promise<DetailedArtwork> {
         let rawResponse = result.response.text();
         console.log("Raw response from Gemini:", rawResponse);
 
-        // More robust cleanup: Remove ```json (optional) and ```, and trim whitespace
+
         let cleanedResponse = rawResponse
-            .replace(/^\s*```(json)?\s*/i, '')  // Remove leading ```json (optional, case-insensitive, handles newlines)
-            .replace(/```\s*$/i, '')          // Remove trailing ``` (and any trailing whitespace)
-            .trim();                     // Remove leading/trailing whitespace
+            .replace(/^\s*```(json)?\s*/i, '')
+            .replace(/```\s*$/i, '')
+            .trim();
 
         console.log("Initial cleaned response length:", cleanedResponse.length);
         console.log("Cleaned Response (Before Purification):", cleanedResponse);
@@ -142,7 +145,7 @@ export async function analyzeArtwork(file: File): Promise<DetailedArtwork> {
         } catch (purificationError) {
             console.error("Purification failed:", purificationError);
             console.error("Cleaned response (before purification):", cleanedResponse);
-            // Instead of throwing here, we'll try to parse the cleanedResponse anyway
+            // We still try to parse even if purification fails
         }
 
         try {
