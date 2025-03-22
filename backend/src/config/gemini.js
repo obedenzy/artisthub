@@ -17,3 +17,31 @@ export const GEMINI_CONFIG = {
 } as const;
 
 export type GeminiConfig = typeof GEMINI_CONFIG;
+import {GoogleGenerativeAI} from '@google/generative-ai';
+
+class GeminiClientClass {
+  static instance = null;
+
+  constructor() {}
+
+  static getModel() {
+    if (!this.instance) {
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey) {
+        throw new Error('Gemini API key is not configured');
+      }
+      this.instance = new GoogleGenerativeAI(apiKey);
+    }
+
+    return this.instance.getGenerativeModel({
+      model: this.GEMINI_CONFIG.model,
+      generationConfig: {
+        maxOutputTokens: this.GEMINI_CONFIG.maxOutputTokens,
+        temperature: this.GEMINI_CONFIG.temperature,
+        topK: this.GEMINI_CONFIG.topK,
+        topP: this.GEMINI_CONFIG.topP,
+      }
+    });
+  }
+}
+export const GeminiClient = GeminiClientClass;
