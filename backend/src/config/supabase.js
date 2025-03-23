@@ -10,6 +10,9 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 
+console.log("Supabase URL (truncated):", supabaseUrl ? supabaseUrl.substring(0, 20) + "..." : "NOT FOUND");
+console.log("Supabase Key (truncated):", supabaseKey ? supabaseKey.substring(0, 20) + "..." : "NOT FOUND");
+
 if (!supabaseUrl || !supabaseKey) {
   throw new Error("SUPABASE_URL and SUPABASE_KEY must be provided in .env file");
 }
