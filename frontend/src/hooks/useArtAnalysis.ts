@@ -1,4 +1,4 @@
-    import { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
     import { DetailedArtwork } from '../types/artwork';
     import { ENV } from '../config/env';
 
